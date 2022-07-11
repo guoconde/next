@@ -1,98 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { RowDiv } from '../../components/table/style';
+import { RowDiv, StyledMiniAvatar } from '../../components/table/style';
+import { clients, deleteClient } from '../../services/clientServices';
 
-export default function Client() {
+export default function Client({ page }) {
   const navigate = useNavigate();
-  const clientLi = [
-    {
-      id: 1,
-      avatar_url: 'https://www.npmjs.com/package/react-toastify',
-      nome: 'john doe da silva',
-      cpf: '000.000.000-33',
-      data_nascimento: '2020-04-10',
-      limite: 0,
-      saldo: 12,
-      logradouro: 'rua a',
-      cep: '74.305-290',
-      bairro: 'bairro aqui',
-      numero: '12',
-      cidade: 'city',
-      uf: 'CT',
-    },
-    {
-      id: 2,
-      avatar: 'avatar',
-      nome: 'john doe da silva',
-      cpf: '000.000.000-33',
-      nascimento: new Date(1995, 3, 23),
-      limite: 0,
-      saldo: 12,
-      logradouro: 'rua a',
-      cep: '74.305-290',
-      bairro: 'bairro aqui',
-      numero: '12',
-      cidade: 'city',
-      uf: 'CT',
-    },
-    {
-      id: 3,
-      avatar: 'avatar',
-      nome: 'john doe da silva',
-      cpf: '000.000.000-33',
-      nascimento: new Date(1995, 3, 23),
-      limite: 0,
-      saldo: 12,
-      logradouro: 'rua a',
-      cep: '74.305-290',
-      bairro: 'bairro aqui',
-      numero: '12',
-      cidade: 'city',
-      uf: 'CT',
-    },
-    {
-      id: 4,
-      avatar: 'avatar',
-      nome: 'john doe da silva',
-      cpf: '000.000.000-33',
-      nascimento: new Date(1995, 3, 23),
-      limite: 0,
-      saldo: 12,
-      logradouro: 'rua a',
-      cep: '74.305-290',
-      bairro: 'bairro aqui',
-      numero: '12',
-      cidade: 'city',
-      uf: 'CT',
-    },
-    {
-      id: 5,
-      avatar: 'avatar',
-      nome: 'john doe da silva',
-      cpf: '000.000.000-33',
-      nascimento: new Date(1995, 3, 23),
-      limite: 0,
-      saldo: 12,
-      logradouro: 'rua a',
-      cep: '74.305-290',
-      bairro: 'bairro aqui',
-      numero: '12',
-      cidade: 'city',
-      uf: 'CT',
-    },
-  ];
+  const [clientList, setClientList] = useState([]);
+
+  async function loadClients() {
+    const promisse = await clients(page);
+    setClientList(promisse);
+  }
+
+  useEffect(() => {
+    loadClients();
+  }, [page]);
+
+  async function handleDelete(id) {
+    const confirmDelete = confirm('Você realmente quer excluir este cliente?');
+
+    if (confirmDelete) {
+      await deleteClient(id);
+      await loadClients();
+      window.location.reload();
+    }
+  }
+
+  if (clientList.length === 0) return <h1>Loading...</h1>;
 
   return (
     <tbody>
-      {clientLi.map((e) => (
+      {clientList.map((e) => (
         <RowDiv key={e.id}>
           <td>{e.id.toString().padStart(3, 0)}</td>
-          <td>{e.avatar}</td>
+          <td>
+            <StyledMiniAvatar
+              style={{
+                backgroundImage: `url(${e.avatar_url})`,
+                backgroundSize: 'contain',
+              }}
+            />
+          </td>
           <td>{e.nome.toLocaleUpperCase()}</td>
           <td className='td-spacing'>{e.cpf}</td>
           <td>
-            R$ {e.limite.toLocaleString('pt-br', { minimumFractionDigits: 2 })}
+            R${' '}
+            {Number(e.limite).toLocaleString('pt-br', {
+              minimumFractionDigits: 2,
+            })}
           </td>
           <td>
             <Button
@@ -110,6 +66,7 @@ export default function Client() {
           </td>
           <td>
             <Button
+              onClick={() => handleDelete(e.id)}
               style={{
                 backgroundColor: 'red',
                 border: 'none',

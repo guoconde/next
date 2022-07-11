@@ -1,18 +1,22 @@
+/* eslint-disable operator-linebreak */
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { UploadButton } from 'react-uploader';
 import { Uploader } from 'uploader';
 import InputMask from 'react-input-mask';
-
+import dayjs from 'dayjs';
 import { CenteredDiv } from './style';
 import { getInfoByCep } from '../../services/viaCepApi';
 import { validade } from '../../schema/validateFrom';
 import styledToastify from '../alert';
+import { insertClient, updateClient } from '../../services/clientServices';
 
 export default function FormClient({ title }) {
   const navigate = useNavigate();
   const client = useLocation().state;
+  const imgDefault =
+    'https://png.pngtree.com/element_our/20200610/ourmid/pngtree-black-default-avatar-image_2237212.jpg';
 
   const uploader = new Uploader({
     apiKey: 'free',
@@ -21,17 +25,17 @@ export default function FormClient({ title }) {
   const [nome, setNome] = useState(client ? client.nome : '');
   const [cpf, setCpf] = useState(client ? client.cpf : '');
   const [dataNascimento, setDataNascimento] = useState(
-    client ? client.data_nascimento : ''
+    client ? dayjs(client.data_nascimento).format('YYYY-MM-DD') : ''
   );
-  const [saldo, setSaldo] = useState(client ? client.saldo : '');
-  const [limite, setLimite] = useState(client ? client.limite : '');
+  const [saldo, setSaldo] = useState(client ? Number(client.saldo) : '');
+  const [limite, setLimite] = useState(client ? Number(client.limite) : '');
   const [cep, setCep] = useState(client ? client.cep : '');
   const [logradouro, setLogradouro] = useState(client ? client.logradouro : '');
   const [bairro, setBairro] = useState(client ? client.bairro : '');
-  const [numero, setNumero] = useState(client ? client.numero : '');
+  const [numero, setNumero] = useState(client ? client.numero : null);
   const [cidade, setCidade] = useState(client ? client.cidade : '');
   const [uf, setUf] = useState(client ? client.uf : '');
-  const [avatar, setAvatar] = useState(client ? client.avatar_url : '');
+  const [avatar, setAvatar] = useState(client ? client.avatar_url : imgDefault);
 
   async function handleCEP(value) {
     try {
@@ -72,8 +76,10 @@ export default function FormClient({ title }) {
 
       if (title === 'EDIÇÃO DE CLIENTE') {
         styledToastify('Edição feita com sucesso');
+        await updateClient(data, client.id);
       } else {
         styledToastify('Cliente cadastrado com sucesso');
+        await insertClient(data);
       }
 
       navigate('/');
@@ -128,7 +134,10 @@ export default function FormClient({ title }) {
                   </Button>
                 )}
               </UploadButton>
-              <Button onClick={() => setAvatar(null)} className='btn-minus'>
+              <Button
+                onClick={() => setAvatar(imgDefault)}
+                className='btn-minus'
+              >
                 -
               </Button>
             </Form.Group>
@@ -219,6 +228,7 @@ export default function FormClient({ title }) {
             <Form.Label>Logradouro</Form.Label>
             <Form.Control
               type='text'
+              disabled
               value={logradouro}
               defaultValue={logradouro}
               onChange={(e) => setLogradouro(e.target.value)}
@@ -230,6 +240,7 @@ export default function FormClient({ title }) {
                 <Form.Label>Bairro</Form.Label>
                 <Form.Control
                   type='text'
+                  disabled
                   value={bairro}
                   defaultValue={bairro}
                   onChange={(e) => setBairro(e.target.value)}
@@ -254,6 +265,7 @@ export default function FormClient({ title }) {
                 <Form.Control
                   type='text'
                   value={cidade}
+                  disabled
                   defaultValue={cidade}
                   onChange={(e) => setCidade(e.target.value)}
                   placeholder='Cidade'
@@ -263,6 +275,7 @@ export default function FormClient({ title }) {
                 <Form.Label>UF</Form.Label>
                 <Form.Control
                   type='text'
+                  disabled
                   minLength='2'
                   maxLength='2'
                   value={uf}
