@@ -1,10 +1,13 @@
 import React from 'react';
 import { Button, Card, Col, Pagination, Row, Table } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { CenteredDiv } from '../../components/table/style';
 import Client from './clients';
 
 export default function ListClient() {
+  const navigate = useNavigate();
+
   const list = [1, 2, 3, 4];
 
   return (
@@ -19,7 +22,9 @@ export default function ListClient() {
           }}
         >
           <span>LISTAGEM DE CLIENTES</span>
-          <Button>ADICIONAR CLIENTE</Button>
+          <Button type='button' onClick={() => navigate('/create')}>
+            ADICIONAR CLIENTE
+          </Button>
         </Card.Header>
         <Card.Body>
           <Table
@@ -54,7 +59,7 @@ export default function ListClient() {
           <PaginationStyled style={{ display: 'flex', gap: '5px' }}>
             <Pagination.Prev />
             {list.map((e) => (
-              <Pagination.Item>{e}</Pagination.Item>
+              <Pagination.Item key={e}>{e}</Pagination.Item>
             ))}
             <Pagination.Next />
           </PaginationStyled>

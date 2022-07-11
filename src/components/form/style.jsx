@@ -1,3 +1,6 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable indent */
+/* eslint-disable no-confusing-arrow */
 import styled from 'styled-components';
 
 export const CenteredDiv = styled.div`
@@ -15,6 +18,10 @@ export const CenteredDiv = styled.div`
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .div-picture {
@@ -33,6 +40,8 @@ export const CenteredDiv = styled.div`
     justify-content: center;
 
     position: relative;
+
+    background-size: contain;
   }
 
   Button.btn-plus {
