@@ -27,7 +27,7 @@ export default function Client({ page }) {
     }
   }
 
-  if (clientList.length === 0) return <h1>Loading...</h1>;
+  if (clientList.length === 0) return <h1> </h1>;
 
   return (
     <tbody>
